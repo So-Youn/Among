@@ -81,6 +81,7 @@ public class LoginActivity extends AppCompatActivity {
     GoogleSignInClient mGoogleSignInClient;
     GoogleSignInOptions googleSignInOptions;
     FirebaseAuth auth;
+    FirebaseUser firebaseUser;
     FirebaseAnalytics firebaseAnalytics;
     FirebaseDatabase database;
     DatabaseReference UserRef;
@@ -101,6 +102,7 @@ public class LoginActivity extends AppCompatActivity {
         mSignInBtn = findViewById(R.id.GoogleSignInButton);
         firebaseAnalytics = FirebaseAnalytics.getInstance(this);
         database = FirebaseDatabase.getInstance();
+        firebaseUser =FirebaseAuth.getInstance().getCurrentUser();
         UserRef = database.getReference("users");
 
 
@@ -137,11 +139,14 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
         mGoogleSignInClient = GoogleSignIn.getClient(this, googleSignInOptions);
-        if(auth.getCurrentUser()!=null){
-            startActivity(new Intent(LoginActivity.this, childrenActivity.class));
+        /*if(auth.getCurrentUser()!=null){
+            Intent intent = new Intent(LoginActivity.this, childrenActivity.class);
+            intent.putExtra("userID",firebaseUser.getEmail());
+            //Log.d("logTest","logTest :::: "+ firebaseUser.getEmail());
+            startActivity(intent);
             finish();
             return;
-        }
+        }*/
         loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
             @Override
             public void onChanged(@Nullable LoginFormState loginFormState) {
@@ -224,16 +229,22 @@ public class LoginActivity extends AppCompatActivity {
                         passwordEditText.getText().toString());*/
             }
         });
-        if(auth.getCurrentUser()!=null){
+
+       /*if(auth.getCurrentUser()!=null){
             if(mode==0){
-                startActivity(new Intent(LoginActivity.this, childrenActivity.class));
-                finish();
-            }else{
-                startActivity(new Intent(LoginActivity.this,Parents.class));
-                finish();
-            }
+            Intent intent = new Intent(LoginActivity.this, childrenActivity.class);
+            intent.putExtra("userID",firebaseUser.getEmail());
+            startActivity(intent);
+            finish();
             return;
-        }
+            }else{
+            Intent intent = new Intent(LoginActivity.this, Parents.class);
+            intent.putExtra("userID",firebaseUser.getEmail());
+            startActivity(intent);
+            finish();
+            return;
+            }
+        }*/
     }
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
@@ -266,7 +277,7 @@ public class LoginActivity extends AppCompatActivity {
                 object.put("userID",memberDTOS[0].getUserID());
                 object.put("password",memberDTOS[0].getPassword());
 
-                url = new URL("http://192.168.43.229:8088/among/member/login.do");
+                url = new URL("http://70.12.224.47:8088/among/member/login.do");
 
 
                 OkHttpClient client = new OkHttpClient();
@@ -358,7 +369,11 @@ public class LoginActivity extends AppCompatActivity {
                                                             //정상적으로 Complete가 된 경우에만 Log를 쌓는다.
                                                             if(databaseError==null){
                                                                 //Activity 연결
-                                                                startActivity(new Intent(LoginActivity.this, childrenActivity.class));
+                                                                /*startActivity(new Intent(LoginActivity.this, childrenActivity.class));
+                                                                finish();*/
+                                                                Intent intent = new Intent(LoginActivity.this, childrenActivity.class);
+                                                                intent.putExtra("userID",user.getEmail());
+                                                                startActivity(intent);
                                                                 finish();
 
                                                             }
@@ -366,7 +381,11 @@ public class LoginActivity extends AppCompatActivity {
                                                     }); //users밑 userID
                                                 }else{
                                                     //데이터가 존재한다면 바로 Actiivty 호출
-                                                    startActivity(new Intent(LoginActivity.this, childrenActivity.class));
+                                                   /* startActivity(new Intent(LoginActivity.this, childrenActivity.class));
+                                                    finish();*/
+                                                    Intent intent = new Intent(LoginActivity.this, childrenActivity.class);
+                                                    intent.putExtra("userID",user.getEmail());
+                                                    startActivity(intent);
                                                     finish();
                                                 }
                                                 //로깅
